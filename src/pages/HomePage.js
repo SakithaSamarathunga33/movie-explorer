@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Typography, Grid, Box, Button, CircularProgress, Alert,  Paper, Divider } from '@mui/material';
+import { Typography, Grid, Box, Button, CircularProgress, Alert, FormControl, InputLabel, Select, MenuItem, Paper, Divider } from '@mui/material';
 import { ClearAll, LocalMovies, TrendingUp, Star, Theaters, Whatshot } from '@mui/icons-material';
 import SearchBar from '../components/SearchBar';
 import MovieCard from '../components/MovieCard';
@@ -82,7 +82,7 @@ const HomePage = () => {
     setSelectedRating('');
 
     try {
-      const data = searchMovies(query, 1);
+      const data = await searchMovies(query, 1);
       setSearchResults(data.results);
       setTotalPages(data.total_pages);
       setLoadingSearch(false);
@@ -117,7 +117,7 @@ const HomePage = () => {
     if (selectedRating) filters['vote_average.gte'] = selectedRating;
 
     try {
-      const data = discoverMovies(filters, 1);
+      const data = await discoverMovies(filters, 1);
       setSearchResults(data.results);
       setTotalPages(data.total_pages);
       setLoadingSearch(false);
@@ -147,9 +147,9 @@ const HomePage = () => {
     try {
       let data;
       if (searchQuery) {
-        data = searchMovies(searchQuery, nextPage);
+        data = await searchMovies(searchQuery, nextPage);
       } else if (selectedGenre || selectedYear || selectedRating) {
-        data = discoverMovies(filters, nextPage);
+        data = await discoverMovies(filters, nextPage);
       } else {
          // Should not happen if logic is correct, but as a fallback
          setLoadingSearch(false);
