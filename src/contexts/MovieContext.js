@@ -34,6 +34,7 @@ export const MovieContext = createContext({
   fetchPopularMovies: () => {},
   fetchTopRatedMovies: () => {},
   fetchUpcomingMovies: () => {},
+  setOnSearchReset: () => {},
 });
 
 export const MovieProvider = ({ children }) => {
@@ -50,6 +51,7 @@ export const MovieProvider = ({ children }) => {
     minRating: 0,
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [onSearchReset, setOnSearchReset] = useState(() => () => {});
 
   // Fetch genres function
   const fetchGenreList = useCallback(async () => {
@@ -218,7 +220,8 @@ export const MovieProvider = ({ children }) => {
     if (searchQuery) {
       searchForMovies(searchQuery, 1, defaultFilters);
     }
-  }, [searchQuery, searchForMovies]);
+    onSearchReset(); // Call the search reset callback
+  }, [searchQuery, searchForMovies, onSearchReset]);
 
   // Handle page change for pagination
   const handlePageChange = useCallback((page) => {
@@ -252,9 +255,10 @@ export const MovieProvider = ({ children }) => {
         fetchPopularMovies: getPopularMovies,
         fetchTopRatedMovies: getTopRatedMovies,
         fetchUpcomingMovies: getUpcomingMovies,
+        setOnSearchReset
       }}
     >
       {children}
     </MovieContext.Provider>
   );
-}; 
+};
