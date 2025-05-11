@@ -50,6 +50,7 @@ const MovieDetailsPage = () => {
       
       try {
         const movieData = await fetchMovieDetails(id);
+        console.log('Movie data structure:', movieData);
         setMovie(movieData);
         
         const similar = await fetchSimilarMovies(id);
@@ -87,6 +88,32 @@ const MovieDetailsPage = () => {
   const trailer = movie?.videos?.find(
     (video) => video.type === 'Trailer' && video.site === 'YouTube'
   ) || movie?.videos?.[0];
+
+  // Function to extract directors from crew data
+  const getDirectors = () => {
+    if (!movie?.crew) return null;
+    
+    const directors = movie.crew
+      .filter(person => person.job === 'Director')
+      .map(director => director.name);
+      
+    return directors.length ? directors.join(', ') : null;
+  };
+  
+  // Function to extract writers from crew data
+  const getWriters = () => {
+    if (!movie?.crew) return null;
+    
+    const writers = movie.crew
+      .filter(person => 
+        person.job === 'Screenplay' || 
+        person.job === 'Writer' || 
+        person.job === 'Story'
+      )
+      .map(writer => writer.name);
+      
+    return [...new Set(writers)].length ? [...new Set(writers)].join(', ') : null;
+  };
 
   // Function to open trailer in a new tab
   const openTrailer = () => {
@@ -201,7 +228,7 @@ const MovieDetailsPage = () => {
         <Grid item xs={12} md={6}>
           <Typography variant="subtitle1" fontWeight={600}>Director</Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-            {movie.director || 'Unknown'}
+            {movie.director || getDirectors() || 'Unknown'}
           </Typography>
           
           <Typography variant="subtitle1" fontWeight={600}>Release Date</Typography>
@@ -212,7 +239,7 @@ const MovieDetailsPage = () => {
         <Grid item xs={12} md={6}>
           <Typography variant="subtitle1" fontWeight={600}>Writers</Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-            {movie.writers || 'Unknown'}
+            {movie.writers || getWriters() || 'Unknown'}
           </Typography>
           
           <Typography variant="subtitle1" fontWeight={600}>Runtime</Typography>
@@ -505,4 +532,4 @@ const MovieDetailsPage = () => {
   );
 };
 
-export default MovieDetailsPage; 
+export default MovieDetailsPage;
